@@ -36,26 +36,38 @@ def print_group_people_with_no_group():
 
 
 def create_group():
-    group = Group()
+    guid = Group().id()
     while True:
         print_group_people_with_no_group()
         uuid = int(input("Which person would you like to add to the new group?(-1 to finish adding people): "))
         if uuid == -1:
             return
+        add_member(guid, uuid)
 
-        b = [person.uuid() for person in Person.people() if person.has_group()]
-        if uuid in [person.uuid() for person in Person.people() if person.has_group()]:
-            print("This person already has a group")
-        else:
-            entry = Person.get(uuid)
-            if entry is not None:
-                group.add_members(entry)
-            else:
-                print("There is no person with that id")
+
+def add_member(guid, uuid):
+    if uuid in [person.uuid() for person in Person.people() if person.has_group()]:
+        print("This person already has a group")
+        return
+    group = Group.get(guid)
+    member = Person.get(uuid)
+    if group is None or member is None:
+        print("Either the group does not exist or the user does not exist")
+        return
+    group.add_members(member)
 
 
 def modify_group():
-   pass
+    guid = int(input("Which group would you like to modify?"))
+    groups = Group.groups()
+    if guid not in range(0,len(groups)):
+        print("There is no group with that id")
+        return
+    action = input("Would you like to ADD or Remove members?")
+    #
+    # actions = {
+    #     "add":
+    # }
 
 
 
@@ -63,17 +75,16 @@ def validate_group():
     pass
 
 
-services = {
-    0: print_options,
-    1: create_person,
-    2: create_group,
-    3: modify_group,
-    4: validate_group,
-    5: print_groups
-}
-
 
 def main_loop():
+    services = {
+        0: print_options,
+        1: create_person,
+        2: create_group,
+        3: modify_group,
+        4: validate_group,
+        5: print_groups
+    }
     while True:
         usr_option = int(input("Choose an option: "))
         if usr_option not in range(-1, 6):

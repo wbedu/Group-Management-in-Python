@@ -1,10 +1,16 @@
 class Group:
-    __groupCount = 0
+    __groupCount = -1
     __groups = []
 
     @classmethod
     def groups(cls):
         return cls.__groups
+
+    @classmethod
+    def get(cls, guid):
+        if guid in range(0, cls.__groupCount+1):
+            return cls.__groups[guid]
+        return None
 
     def __init__(self):
         self.__set_new_id()
@@ -19,12 +25,14 @@ class Group:
         if person.uuid() not in [p.uuid() for p in self.__members]:
             person.set_group(True)
             self.__members.append(person)
+            Group.__groups[self.id()] = self
 
     def remove_member(self, uuid):
         for person in self.__members:
             if person.uuid() == uuid:
                 person.set_group(False)
                 self.__members.remove(person)
+                Group.__groups[self.id()] = self
 
     def id(self):
         return self.__id
