@@ -17,10 +17,9 @@ def print_options():
 
 
 def print_groups():
-    groups = Group.groups()
-    for group in groups:
-        print("Group ID: ", group.__id)
-        print("\n\t".join([person.name() for person in Person.people() if person.uuid in group.members()]))
+    for group in Group.groups():
+        print("Group ID: ", group.id())
+        print("\n\t".join([person.name() for person in group.members()]))
 
 
 def create_person():
@@ -29,22 +28,35 @@ def create_person():
 
 
 def print_group_people_with_no_group():
-    groups = Group.groups()
-    for group in groups:
-        print("Group ID: ", group.__id)
-        print("\n\t".join([person.name() for person in Person.people() if person.uuid in group.members()]))
+    groupless = [person for person in Person.people() if not person.has_group()]
+    if(len(groupless) == 0):
+        print("All users have groups")
+    for person in groupless:
+        print(person.uuid(), " ", person.name())
 
 
 def create_group():
-    uuids = []
+    group = Group()
     while True:
+        print_group_people_with_no_group()
         uuid = int(input("Which person would you like to add to the new group?(-1 to finish adding people): "))
-        if uuid not in [person.uuid() for person in Person.people()]:
-            print("There is no user with that id")
+        if uuid == -1:
+            return
+
+        b = [person.uuid() for person in Person.people() if person.has_group()]
+        if uuid in [person.uuid() for person in Person.people() if person.has_group()]:
+            print("This person already has a group")
+        else:
+            entry = Person.get(uuid)
+            if entry is not None:
+                group.add_members(entry)
+            else:
+                print("There is no person with that id")
 
 
 def modify_group():
-    Group.print_groups()
+   pass
+
 
 
 def validate_group():
@@ -64,7 +76,7 @@ services = {
 def main_loop():
     while True:
         usr_option = int(input("Choose an option: "))
-        if usr_option < -1 or usr_option > 6:
+        if usr_option not in range(-1, 6):
             print("Error: invalid input")
         else:
             if usr_option == -1:

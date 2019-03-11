@@ -1,27 +1,36 @@
 class Person:
-    __totalPopulation = 0
+    __totalPopulation = -1
     __people = []
-    __default_attr = {'uuid': None, 'firstName': None, "lastName": None}
+    __default_attr = {'uuid': None, 'firstName': None, "lastName": None, "hasGroup": False}
 
     @classmethod
     def people(cls):
         return cls.__people
 
-    def __init__(self):
-        Person.__totalPopulation += 1
-        self.__attributes = {**Person.__default_attr, "uuid": Person.__totalPopulation}
-        Person.__people.append(self)
+    @classmethod
+    def get(cls, uuid):
+        if uuid not in range(0, cls.__totalPopulation+1):
+            return None
+        return cls.__people[uuid]
 
     def __init__(self, attr):
         Person.__totalPopulation += 1
-        self.__attributes = {**Person.__default_attr, **attr}
+        self.__attributes = {**Person.__default_attr, **attr, 'uuid': Person.__totalPopulation}
         Person.__people.append(self)
 
     def change_attribute(self, attr_name, attr):
         self.__attributes = {**self.__attributes, attr_name: attr}
+        Person.__people[self.uuid()] = self
 
     def name(self):
         return self.__attributes["firstName"] + " " + self.__attributes["lastName"]
 
     def uuid(self):
         return self.__attributes["uuid"]
+
+    def set_group(self, entry):
+        self.__attributes["hasGroup"] = entry
+        Person.__people[self.uuid()] = self
+
+    def has_group(self):
+        return self.__attributes["hasGroup"]
