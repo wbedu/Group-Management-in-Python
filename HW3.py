@@ -93,7 +93,10 @@ def modify_group():
 
 
 def validate_group():
-    pass
+    for person in Person.people():
+        person.validate([])
+    for group in Group.groups():
+        group.validate()
 
 
 def main_loop():

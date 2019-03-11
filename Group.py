@@ -41,3 +41,12 @@ class Group:
 
     def members(self):
         return self.__members
+
+    def validate(self):
+        for person in self.members():
+            person.validate(["firstName", "lastName", "ID"])
+        member_count = len(self.__members)
+        if member_count < 3:
+            print("Group ", self.__id, " has less than 3 members")
+        if member_count > 5:
+            print("Group ", self.__id, " has more than 5 members")

@@ -1,7 +1,7 @@
 class Person:
     __totalPopulation = -1
     __people = []
-    __default_attr = {'uuid': None, 'firstName': None, "lastName": None, "hasGroup": False}
+    __default_attr = {'ID': None, 'firstName': None, "lastName": None, "hasGroup": False}
 
     @classmethod
     def people(cls):
@@ -15,7 +15,7 @@ class Person:
 
     def __init__(self, attr):
         Person.__totalPopulation += 1
-        self.__attributes = {**Person.__default_attr, **attr, 'uuid': Person.__totalPopulation}
+        self.__attributes = {**Person.__default_attr, **attr, 'ID': Person.__totalPopulation}
         Person.__people.append(self)
 
     def change_attribute(self, attr_name, attr):
@@ -26,7 +26,7 @@ class Person:
         return self.__attributes["firstName"] + " " + self.__attributes["lastName"]
 
     def uuid(self):
-        return self.__attributes["uuid"]
+        return self.__attributes["ID"]
 
     def set_group(self, entry):
         self.__attributes["hasGroup"] = entry
@@ -34,3 +34,12 @@ class Person:
 
     def has_group(self):
         return self.__attributes["hasGroup"]
+
+    def validate(self, attrs):
+        if len(attrs) == 0:
+            attrs = ["ID", "firstName", "lastName"]
+        for attr in attrs:
+            if attr not in self.__attributes or self.__attributes[attr] is None:
+                print(self.name(), " is missing the attribute: ", attr)
+        if not self.__attributes["hasGroup"]:
+            print(self.name(), " does not have an assigned group")
