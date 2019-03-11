@@ -18,7 +18,7 @@ def print_options():
 
 def print_groups():
     for group in Group.groups():
-        print("Group ID: ", group.id())
+        print("Group ", group.id())
         print("\n\t".join([person.name() for person in group.members()]))
 
 
@@ -28,10 +28,10 @@ def create_person():
 
 
 def print_group_people_with_no_group():
-    groupless = [person for person in Person.people() if not person.has_group()]
-    if(len(groupless) == 0):
+    people = [person for person in Person.people() if not person.has_group()]
+    if len(people) == 0:
         print("All users have groups")
-    for person in groupless:
+    for person in people:
         print(person.uuid(), " ", person.name())
 
 
@@ -57,23 +57,43 @@ def add_member(guid, uuid):
     group.add_members(member)
 
 
+def remove_member(guid, uuid):
+    group = Group.get(guid)
+    if group is None:
+        print("The group does not exist")
+        return
+    if not group.remove_member(uuid):
+        print("removing person", uuid, " from group ", guid, " failed")
+
+
 def modify_group():
     guid = int(input("Which group would you like to modify?"))
-    groups = Group.groups()
-    if guid not in range(0,len(groups)):
+    group = Group.get(guid)
+    if group is None:
         print("There is no group with that id")
         return
-    action = input("Would you like to ADD or Remove members?")
-    #
-    # actions = {
-    #     "add":
-    # }
-
+    action = input("Would you like to ADD or Remove members?").lower()
+    if "add" in action:
+        while True:
+            print_group_people_with_no_group()
+            uuid = int(input("Which person would you like to add? (-1 to finish add people):"))
+            if uuid is -1:
+                return
+            add_member(guid, uuid)
+    if "remove" in action:
+        while True:
+            for person in group.members():
+                print(person.uuid(), " ", person.name())
+            uuid = int(input("Which person would you like to remove? (-1 to finish removing people):"))
+            if uuid is -1:
+                return
+            remove_member(guid, uuid)
+    else:
+        print("Invalid action")
 
 
 def validate_group():
     pass
-
 
 
 def main_loop():

@@ -33,6 +33,8 @@ class Group:
                 person.set_group(False)
                 self.__members.remove(person)
                 Group.__groups[self.id()] = self
+            return True
+        return False
 
     def id(self):
         return self.__id
